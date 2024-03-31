@@ -1,0 +1,48 @@
+local corTimeInimigo = Color3.fromRGB(255, 0, 0) -- Vermelho
+local corTimeAliado = Color3.fromRGB(0, 0, 255) -- Azul
+local espAtivado = false
+
+local function DesenharMarcadorJogador(jogador, cor)
+    local playerGui = jogador:WaitForChild("PlayerGui")
+    local espFrame = Instance.new("Frame")
+    espFrame.Size = UDim2.new(0, 100, 0, 20)
+    espFrame.BackgroundColor3 = cor
+    espFrame.BorderSizePixel = 2
+    espFrame.Parent = playerGui
+end
+
+local function AtualizarESP()
+    for _, jogador in pairs(game:GetService("Players"):GetPlayers()) do
+        if jogador ~= game:GetService("Players").LocalPlayer then
+            local posicaoJogador = jogador.Character and jogador.Character.Head.Position
+            if posicaoJogador then
+                local posicaoTela = game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(posicaoJogador)
+                if posicaoTela.z > 0 then
+                    local cor = jogador.Team == game:GetService("Players").LocalPlayer.Team and corTimeAliado or corTimeInimigo
+                    DesenharMarcadorJogador(jogador, cor)
+                end
+            end
+        end
+    end
+end
+
+game:GetService("UserInputService").InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Y then -- Defina a tecla desejada aqui
+        espAtivado = not espAtivado
+        if espAtivado then
+            AtualizarESP()
+        else
+            -- Remover todos os marcadores
+            for _, jogador in pairs(game:GetService("Players"):GetPlayers()) do
+                local playerGui = jogador:FindFirstChild("PlayerGui")
+                if playerGui then
+                    for _, frame in ipairs(playerGui:GetChildren()) do
+                        if frame:IsA("Frame") then
+                            frame:Destroy()
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
