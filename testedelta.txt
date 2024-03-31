@@ -1,0 +1,42 @@
+-- Configurações
+local ativarESP = true  -- Defina como 'true' para ativar o ESP
+
+-- Função para desenhar o ESP
+function DesenharESP(jogador, cor)
+    local character = jogador.Character
+    if character then
+        local head = character:FindFirstChild("Head")
+        if head then
+            local screenPosition = workspace.CurrentCamera:WorldToScreenPoint(head.Position)
+            if screenPosition.Z > 0 then
+                -- Desenhe um retângulo ou seta na posição da tela
+                -- Aqui você pode personalizar o visual do ESP (cor, forma, etc.)
+                print("Jogador " .. jogador.Name .. " está na tela!")
+            end
+        end
+    end
+end
+
+-- Função para verificar a equipe do jogador
+function VerificarEquipe(jogador)
+    -- Substitua pela lógica real para determinar a equipe do jogador
+    -- Por exemplo, se o jogador estiver na equipe azul, retorne "amigo"
+    return "inimigo"
+end
+
+-- Loop principal
+while true do
+    if ativarESP then
+        for _, jogador in pairs(game:GetService("Players"):GetPlayers()) do
+            if jogador ~= game:GetService("Players").LocalPlayer then
+                local equipe = VerificarEquipe(jogador)
+                if equipe == "amigo" then
+                    DesenharESP(jogador, Color3.fromRGB(0, 0, 255))  -- Azul para equipe amiga
+                elseif equipe == "inimigo" then
+                    DesenharESP(jogador, Color3.fromRGB(255, 0, 0))  -- Vermelho para equipe inimiga
+                end
+            end
+        end
+    end
+    wait(1)  -- Atualize a cada segundo (ajuste conforme necessário)
+end
